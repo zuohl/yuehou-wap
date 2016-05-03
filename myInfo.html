@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+	<link rel="stylesheet" href="css/common.css" />
+
+</head>
+
+<body>
+
+	<div data-role="page" id="myInfoPage"  data-dom-cache="true">
+
+		<!--		<style>
+                    .myInfo::after {
+                        background: url("image/my_current.png")
+                        no-repeat 0 0;
+                        background-size: 20px 20px;
+                    }
+                </style>-->
+		<script>
+			function getUserInfo(token) {
+				$.ajax({
+					type : "POST",
+					url  : urls.userInfo,
+					cache : false,
+					async: true,
+					dataType : "json",
+					data : {t:token
+					},
+					beforeSend: function () {
+						showLoader("正在加载");
+					},
+					complete:function(){
+						hideLoader();
+					},
+					success : function(data,status){
+						if (data.code == "SUCCESS") {
+							var userInfo = data.data;
+/*							var lables = new Array();
+							lables.push("<li>");
+							lables.push("<a href='userInfo.html'>姓名:<span class='ui-li-count'>");
+							if (isNotEmpty(userInfo.realName)) {
+								lables.push(userInfo.realName);
+							} else if (isNotEmpty(userInfo.nickname)) {
+								lables.push(userInfo.nickname);
+							} else {
+								lables.push(userInfo.mobileNumber);
+							}
+
+							lables.push("</span></a></li>");
+							lables.push("<li>")
+							lables.push("<a href='#download' data-rel='popup' data-position-to='window' data-transition='pop'> ");
+							lables.push("爱钱包:<span class='ui-li-count'>");
+							lables.push(userInfo.amountShow);
+							lables.push("</span></a></li>");
+							lables.push("<li>");
+							lables.push("<a href='#download' data-rel='popup' data-position-to='window' data-transition='pop'> ");
+							lables.push("券:<span class='ui-li-count'>");
+							lables.push(userInfo.couponCount);
+							lables.push("</span></a></li>")
+							$("#infoList").append(lables.join("")).listview('refresh');*/
+							var name = "";
+							if (isNotEmpty(userInfo.realName)) {
+								name = userInfo.realName;
+							} else if (isNotEmpty(userInfo.nickname)) {
+								name = userInfo.nickname;
+							} else {
+								name = userInfo.mobileNumber;
+							}
+							$("#userName").text(name);
+							$("#userCoupon").text(userInfo.couponCount);
+							$("#sysWallet").text(userInfo.amountShow);
+						}
+						else if (data.code == "INVALID_SESSION") {
+							returnToLogin("previousPage=myInfo.html");
+						}
+					}
+				});
+			}
+
+			$("#myInfoPage").on('pageinit', function () {
+				getUserInfo(getToken());
+
+/*				$("#myInfoPage").on("swiperight",function(){
+					$("#myInfoPage .myOrder").click();
+				});*/
+			})
+
+		</script>
+		<div data-role="header" data-theme="a" data-tap-toggle="false">
+			<a href="main.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+			<h3>个人信息</h3>
+		</div>
+		<div data-role="content">
+			<ul data-role="listview" id="infoList" data-inset="true">
+				<li><a href='userInfo.html'>姓名:<span class='ui-li-count' id="userName"></span></a></li>
+				<li><a href=''>爱钱包:<span class='ui-li-count' id="sysWallet"></span></a></li>
+				<li><a href=''>券:<span class='ui-li-count' id="userCoupon"></span></a></li>
+				<li><a href='myOrder.html'>我的订单</a></li>
+			</ul>
+			<div data-role="popup" id="download" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
+  				            <h3>下载爱自助APP</h3>
+            <p></p>
+            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.cunhou.aizizhu" data-role="button"  data-icon="check" data-inline="true" data-mini="true">下载</a>
+            <a href="#" data-role="button" data-rel="back" data-inline="true" data-mini="true">取消</a>
+		</div>
+<!--		<div data-role="footer" data-position="fixed" data-theme="a" data-tap-toggle="false">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="main.html" data-transition="slide" class="main ui-btn-icon-top" data-direction="reverse">主页</a></li>
+					<li><a href="myOrder.html" data-transition="slide" class="myOrder ui-btn-icon-top" data-direction="reverse">我的订单</a></li>
+					<li><a href="myInfo.html" data-transition="slide" class="myInfo_active ui-btn-icon-top" >我的</a></li>
+				</ul>
+			</div>
+		</div>-->
+	 </div>
+	</div>
+</body>
+</html>

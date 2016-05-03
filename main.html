@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>爱自助</title><meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+
+    <script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/common.css" />
+<script src="js/common.js"></script>
+
+</head>
+<body>
+    <div data-role="page" id="mainPage" data-dom-cache="true">
+        <script src="js/menu.js"></script>
+        <script src="js/shop.js"></script>
+        <script src="js/gps.js"></script>
+        <div data-role="header" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <h1>爱自助</h1>
+            <div data-role="navbar" >
+                <ul class="headTitle">
+                    <li><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.cunhou.aizizhu">App下载</a></li>
+                    <li><a href="searchShop.html" class="ui-btn-icon-left ui-icon-search">搜索</a></li>
+                    <li><a href="myInfo.html">我的</a></li>
+                </ul>
+                <!--                <div class="ui-grid-b">
+                                    <div class="ui-block-a" style="padding: 8px 0px; width:30%">
+                                        &lt;!&ndash;<a href="hotCity.html" id="cityName" data-ajax="false" class="ui-link ui-btn ui-icon-carat-d ui-btn-icon-right">深圳</a>&ndash;&gt;
+                                    </div>
+                                    <div class="ui-block-b" style="padding: 5px 0px; width:50%">
+                                        <input placeholder="请输入店铺名称" type="search" id="searchKeyWords" data-clear-btn="true" />
+                                    </div>
+                                    <div class="ui-block-c" style="padding: 8px 0px; width:15%">
+                                        <input value="搜索" type="submit" onclick="searchShop(1)">
+                                    </div>
+                                </div>-->
+            </div>
+        </div>
+        <input type="hidden" id="totalCount" name="totalCount" />
+    
+        <div data-role="content">
+        <ul data-role="listview" data-inset="true" id="listUl">
+            
+        </ul>
+        
+        
+        <div class="ui-content" id="more" align="center">
+            <p id="moreP" align="center">正在努力加载中...</p>
+        </div>
+        <script type="text/javascript">
+
+            $(document).on('pageshow','#mainPage', function () {
+                $(document).bind("scroll", function(event){
+                    var mainPageIndex = parseInt(getValue("mainPageIndex"));//当前页
+                    var mainPageSize = parseInt(getValue("mainPageSize"));//总页数
+                    if (mainPageIndex >= mainPageSize) {
+                        $("#moreP").html("没有更多了");
+                    } else if($(document).scrollTop() >= $(document).height()-$(window).height()) {
+                        var content = loadMainPage(++mainPageIndex);
+                        $('#listUl').append(content).listview('refresh');
+                        setValue("mainPageIndex", mainPageIndex);
+                    }
+                });
+            });
+
+            $(document).on("pagehide","#mainPage",function(){
+                $(document).unbind("scroll");
+            });
+            
+            $("#mainPage").on('pageinit', function () {
+                wxConfig();
+                var content = "";
+                setValue("mainPageIndex", 1);
+                setValue("mainPageSize", 1);
+                if (isWeChat()) {
+                    wx.ready(function () {
+                        wx.getLocation({
+                            type: 'gcj02', // 默认为wgs84的gps坐标，如果要返回直接给openLocation用的火星坐标，可传入'gcj02'
+                            success: function (res) {
+                                var gps = GPS.bd_encrypt(res.latitude,res.longitude);
+                                setValue("latitude",gps.lat);
+                                setValue("longitude",gps.lon);
+                            },
+                            cancel: function (res) {
+                                alert("用户拒绝获取地理位置");
+                            },
+                            complete: function(res) {
+                                content = loadMainPage(1,"");
+                                $('#listUl').html(content).listview('refresh');
+                                if (getValue("mainPageSize") == getValue("mainPageIndex")) {
+                                    $("#moreP").html("没有更多了");
+                                }
+                            }
+                        });
+                    });
+                }
+                else {
+                    content = loadMainPage(1,"");
+                    $('#listUl').html(content).listview('refresh');
+                    if (getValue("mainPageSize") == getValue("mainPageIndex")) {
+                        $("#moreP").html("没有更多了");
+                    }
+                }
+/*                $("#mainPage").on("swipeleft",function(){
+                    $("#mainPage .myOrder").click();
+                });*/
+            });
+
+        </script>
+        </div>
+<!--        <div data-role="footer" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <div data-role="navbar">
+                <ul class="main_footer">
+                    <li><a href="#" class="main_active ui-btn-icon-top" >主页</a></li>
+                    <li><a href="myOrder.html" data-transition="slide" class="myOrder ui-btn-icon-top">我的订单</a></li>
+                    <li><a href="myInfo.html" data-transition="slide" class="myInfo ui-btn-icon-top" >我的</a></li>
+                </ul>
+            </div>
+        </div>-->
+    </div>
+</body>
+
+</html>

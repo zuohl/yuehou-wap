@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>爱自助</title><meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+<script src="js/vue.js"></script>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="js/common.js"></script>
+<script src="js/main_vue.js"></script>
+
+</head>
+<body>
+	<div class="container">
+		<div class="col-md-6 col-md-offset-3">
+			<h1>Vue demo</h1>
+			<div id="app111">
+			    <div>{{message}}</div>
+			    <input type="text" v-model="message">
+			    		<table>
+				<tr v-for="book in books ">
+					<td>{{book.id}}</td>
+					<td>{{book.name}}</td>
+					<td>{{book.author}}</td>
+					<td>{{book.price}}</td>
+				</tr>
+		</table>	
+			</div>
+		</div>
+
+	</div>
+</body>
+
+</html>

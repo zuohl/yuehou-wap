@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.datetimepicker.css">
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <!-- <script src="jquery-mobile/jquery.datetimepicker.js"></script> -->
+    <!-- <script src="jquery-mobile/jquery.validate.min.js"></script> -->
+
+</head>
+
+<body>
+
+    <div data-role="page" id="userInfoPage"  data-dom-cache="true">
+        <div data-role="header" id="pageone" data-position="fixed" data-theme="a">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1 id="title">用户信息</h1>
+        </div>
+        
+        <script>
+            function initPage() {
+                if (1 == localStorage.updateType) {
+                    $('#title').html("修改昵称");
+                } else if (2 == localStorage.updateType) {
+                    $('#title').html("修改姓名");
+                } else if (3 == localStorage.updateType) {
+                    $('#title').html("修改生日");
+                    // 修改为日期格式
+                    $('#updateValue').attr("type", "date");
+                } else if (4 == localStorage.updateType) {
+                    $('#title').html("修改邮箱");
+                    $('#updateValue').attr("type", "email");
+                }
+                $('#updateValue').val(localStorage.updateValue);
+            }
+
+            $("#userInfoPage").on('pageinit', function () {
+                initPage();
+            })
+            
+            function updateUserInfo() {
+                var updateValue = $('#updateValue').val();
+                if (updateValue==null || updateValue=="") {
+                    // 生日字段非法时(如：2015-2-30)，取到的值为空
+                    if (1 == localStorage.updateType) {
+                        $('#errMsg').html("昵称不能为空！");
+                    } else if (2 == localStorage.updateType) {
+                        $('#errMsg').html("姓名不能为空！");
+                    } else if (3 == localStorage.updateType) {
+                        $('#errMsg').html("生日不能为空或非法值！");
+                    } else if (4 == localStorage.updateType) {
+                        $('#errMsg').html("邮箱不能为空！");
+                    }
+                    return;
+                }
+                if (4 == localStorage.updateType) {
+                    if (!validEmail(updateValue)) {
+                        $('#errMsg').html("邮箱格式不正确！");
+                        return;
+                    }
+                }
+                $.ajax({
+                    type : "POST",
+                    url  : urls.userInfoUpdate,
+                    cache : false,
+                    async: true,
+                    dataType : "json",
+                    data : {
+                        t : getToken(),
+                        nickname : 1 == localStorage.updateType?$('#updateValue').val():null,
+                        realname : 2 == localStorage.updateType?$('#updateValue').val():null,
+                        birthday : 3 == localStorage.updateType?$('#updateValue').val():null,
+                        email : 4 == localStorage.updateType?$('#updateValue').val():null,
+                    },
+                    beforeSend: function () {
+                        showLoader("正在加载");
+                    },
+                    complete:function(){
+                        hideLoader();
+                    },
+                    success : function(data,status){
+                        if (data.code == "SUCCESS") {
+                            window.history.back(-1);
+                        } else if (data.code == "INVALID_SESSION") {
+                            returnToLogin();
+                        }
+                    }
+                });
+            }
+        </script>
+        <div data-role="content">
+            <form method="post" action="">
+            <ul data-role="listview" id="userInfoList" data-inset="true">
+                <li><input type="text" id="updateValue" name="updateValue" /></li>
+                <span id="errMsg" style="color: red"></span>
+            </ul>
+            <div align="center">
+                <input type="submit" id="saveBtn" data-inline="true" value="保存" onclick="updateUserInfo();return false" />
+            </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

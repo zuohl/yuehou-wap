@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/menu.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+</head>
+
+<body onload="">
+
+    <div data-role="page" id="myInfoPage" data-dom-cache="true">
+        <div data-role="header" id="pageone" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <a href="shopDetails.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+            <h1>自助买单</h1>
+        </div>
+        <script>
+            function confimBtn() {
+                var tableNumber = $('#tableNumber').val();
+                if (!isNotEmpty(tableNumber)) {
+                    $('#errMsg').html("桌号不能为空!");
+                    $('#tableNumber').val("");
+                    return;
+                }
+                var peopleNumber = $('#peopleNumber').val();
+                var re = /^[1-9]+[0-9]*]*$/;
+                if (!isNotEmpty(peopleNumber)) {
+                    $('#errMsg').html("人数不能为空!");
+                    return;
+                } else {
+                    if (!re.test(peopleNumber)) {
+                        $('#errMsg').html("人数只能为数字!");
+                        $('#peopleNumber').val("");
+                        return;
+                    }
+                }
+                var shopId = getValue("shopId");
+                var orderTotalPrice = $("#orderTotalPrice").val();
+                var inactiveAmount = $("#inactiveAmount").val();
+                if (!isNotEmpty(orderTotalPrice) || orderTotalPrice==0) {
+                    $('#errMsg').html("订单金额不能为空或零!");
+                    $('#orderTotalPrice').val("");
+                    return;
+                }
+                if (!validFloat(orderTotalPrice)) {
+                    $('#errMsg').html("订单金额格式错误!");
+                    return;
+                }
+                if (isNotEmpty(inactiveAmount) && !validFloat(inactiveAmount)) {
+                    $('#errMsg').html("非优惠金额格式错误!");
+                    return;
+                }
+                
+                // 先判断有没有登陆
+                if (!checkLogin()) {
+                    // 没有登陆时，才允许输入手机号码
+                    var mobileNumber = $('#mobileNumber').val();
+                    if (!isNotEmpty(mobileNumber)) {
+                        $('#errMsg').html("手机号码不能为空！");
+                        $('#mobileNumber').val("");
+                        return;
+                    }
+                    if (!validTelNum(mobileNumber)) {
+                        $('#errMsg').html("请输入合法的手机号码(11位)！");
+                        $('#mobileNumber').val("");
+                        return;
+                    }
+                    
+                    // 判断账户是否存在
+                    var userBean = checkAccountExist(mobileNumber)
+                    if (null == userBean) {
+                        // 账号不存在，需要先注册
+                        userBean = registerByH5(mobileNumber);
+                    }
+                    // 修改token的值为userId
+                    if (null != userBean) {
+                        getTempToken(userBean.userId)
+                    }
+                }
+                
+                var specialOfferIds = new Array();
+                $('input:radio[name="BEFORE_PAYMENT"]:checked').each(function(){
+                    specialOfferIds.push($(this).attr("id"));
+                });
+                $('input:radio[name="AFTER_PAYMENT"]:checked').each(function(){
+                    specialOfferIds.push($(this).attr("id"));
+                });
+                var couponIds = new Array();
+                $('input:checkbox[name="userCoupons"]:checked').each(function(){
+                    couponIds.push($(this).attr("id"));
+                });
+                setBtnStatus($('#payBtn'));
+                $.ajax({
+                    type : "GET",
+                    url  : urls.place_shortcut_order,
+                    cache : false,
+                    async: true,
+                    dataType: "json",
+                    data : {
+                        t:getToken(),
+                        totalAmount : orderTotalPrice,
+                        shopId : shopId,
+                        inactiveAmount : inactiveAmount,
+                        peopleNumber : peopleNumber,
+                        tableNumber : tableNumber,
+                        specialOfferIds : specialOfferIds.join(","),
+                        couponIds : couponIds.join(","),
+                        refOrderId : ""
+                    },
+                    success : function(data) {
+                        if (data.code == "SUCCESS") {
+                            var orderId = data.data.userOrderBean.userOrderId;
+                            setValue("orderId", orderId);
+                            setValue("payMoney", $('#payPrice').html());
+                            // 付款方式（钱包余额、微信）
+                            if ($('.ui-radio label').hasClass("ui-radio-on")) {
+                                window.location.href= wechatUrl;
+                            } else {
+                                paymentOrderByWallet(orderId);
+                            }
+                        }
+                        else if (data.code == "BUSINESS_ERROR"){
+                            alert(data.msg)
+                        }
+                        else if (data.code == "INVALID_SESSION") {
+                            returnToLogin();
+                        }
+                    }
+                });
+            }
+        
+        // 用户钱包中的余额
+        getBalance();
+        
+        function calcPayPrice(str) {
+            $('#errMsg').html("");
+            var totalAmount = $('#orderTotalPrice').val();
+            var inactiveAmount = $('#inactiveAmount').val();
+            // 如果在修改订单总额时，非优惠金额不为空，则先把非优惠金额置为空，防止计算出错
+            if (str == 1) {
+                $('#inactiveAmount').val("");
+            }
+            
+            if (!isNotEmpty(totalAmount)) {
+                totalAmount = 0;
+                return;
+            }
+            if (!validFloat(totalAmount)) {
+                $('#errMsg').html("订单金额格式错误!");
+                //$('#orderTotalPrice').val("");
+                return;
+            }
+            if (isNotEmpty(inactiveAmount)) {
+                if (!validFloat(inactiveAmount)) {
+                    $('#errMsg').html("非优惠金额格式错误!");
+                    //$('#inactiveAmount').val("");
+                    return;
+                }
+            } else {
+                // 为空时，要手动设置为0，防止后面的计算出错
+                inactiveAmount = 0;
+            }
+            if (parseFloat(totalAmount) < parseFloat(inactiveAmount)) {
+                // 需要重新计算优惠和价格，这里不能return
+                $('#errMsg').html("非优惠金额有误，请重新输入!");
+                $('#inactiveAmount').val("");
+                inactiveAmount = 0;
+            }
+            var payPrice = (parseFloat(totalAmount) - parseFloat(inactiveAmount)).toFixed(2);
+            $('#payPrice').html(totalAmount);
+
+            // 店铺的优惠活动
+            getSpecialOffer();
+        }
+
+        </script>
+        <div data-role="content" class="ui-content">
+            <div>
+                <ul data-role="listview" id="payList" data-inset="true">
+                    <li>
+                        <span>桌号：</span>
+                        <input type="text" name="tableNumber" id="tableNumber" placeholder="桌号(必填):" />
+                    </li>
+                    <li>
+                        <span>人数：</span>
+                        <input type="text" name="peopleNumber" id="peopleNumber" placeholder="人数:" />
+                    </li>
+                    <li>
+                        <span>订单总额：</span>
+                        <input type="text" name="orderTotalPrice" id="orderTotalPrice" placeholder="询问服务员后输入" onkeyup="calcPayPrice(1)" />
+                    </li>
+                    <li>
+                        <span>非优惠金额：</span>
+                        <input type="hidden" name="activeAmountHid" id="activeAmountHid" />
+                        <input type="text" name="inactiveAmount" id="inactiveAmount" onkeyup="calcPayPrice(2)" />
+                    </li>
+                    <li id="mobileNumberDiv">
+                        <div>
+                            <span>免登陆直接下单，登陆后可获得最新优惠</span><br />
+                            <span>您的手机</span><input type="text" id="mobileNumber" name="mobileNumber" maxlength="11" placeholder="手机未注册将自动创建爱自助账号"/>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div id="coupon_div">
+                <span id="specialOfferSpan">可使用优惠</span>
+                <ul data-role="listview" data-inset="true" id="specialOffer_list"></ul>
+                <span id="userCouponSpan">优惠券</span>
+                <ul data-role="listview" data-inset="true" id="coupon_list"></ul>
+            </div>
+            <div id="present_div">
+                <span id="presentSpan">买单赠送</span>
+                <ul data-role="listview" data-inset="true" id="present_list"></ul>
+            </div>
+            
+            <div id="paytype_div">
+                <span id="complateSpan">选择支付方式</span>
+                <ul data-role="listview" data-inset="true" id="paytype_list">
+                    <div class="ui-checkbox">
+                        <label for="checkbox-enhanced" class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-checkbox-off">零钱支付余额：<span id="balance">0</span>元</label>
+                        <input name="checkbox-enhanced" id="wallet" name="paytype" data-enhanced="true" type="checkbox" checked disabled="disabled"/>
+                    </div>
+                    <div class="ui-radio">
+                        <label for="radio-enhanced" class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-radio-off">微信支付</label>
+                        <input name="radio-enhanced" id="weixin" name="paytype" data-enhanced="true" type="radio" checked/>
+                    </div>
+                </ul>
+            </div>
+            
+            <div>
+                <span id="errMsg" style="color: red"></span>
+            </div>
+            
+            <div data-role="controlgroup" data-type="horizontal" align="right">
+                <span>支付金额：</span><span id="payPrice" style="color: red;">0</span><span>元</span>
+                <span><input type="button" data-role="button" id="payBtn" data-mini="true" value="确认付款" onclick="confimBtn()" /></span>
+            </div>
+        </div>
+    </div>
+</body>
+<script type="text/javascript">
+//如果已经登陆了，就不展示手机区域
+if (checkLogin()) {
+    $('#mobileNumberDiv').hide();
+}
+</script>
+</html>

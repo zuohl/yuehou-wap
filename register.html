@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>注册</title>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<script src="jquery-mobile/jquery.md5.min.js"></script>
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/common.css" />
+<script src="js/common.js"></script>
+<script src="js/user.js"></script>
+</head>
+<body>
+    <div data-role="page" id="registerPage" data-dom-cache="true">
+        <script>
+        $("#registerPage").on('pageinit', function () {
+            $('#pageTitle').html(localStorage.pageTitle);
+        });
+        
+        var countdown = 60; 
+        function settime() { 
+            if (countdown == 0) { 
+                $('#authCodeBtn').button("enable");
+                $('#authCodeBtn').val("免费获取验证码"); 
+                $('#authCodeBtn').button("refresh");
+                countdown = 60; 
+                return;
+            } else { 
+                $('#authCodeBtn').button("disable");
+                $('#authCodeBtn').val("重新发送(" + countdown + ")"); 
+                $('#authCodeBtn').button("refresh");
+                countdown--; 
+            } 
+            setTimeout(function() { 
+                settime() }
+            ,1000);
+        }
+        </script>
+        <div data-role="header" data-add-back-btn="true">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1><span id="pageTitle"></span></h1>
+        </div>
+        
+        <div data-role="content">
+            <div class="ui-grid-b">
+                <div class="ui-block-a" align="right" style="padding: 15px 0px;">
+                    <span>手机号码：</span>
+                </div>
+                <div class="ui-block-b">
+                    <input type="text" id="mobileNumber" name="mobileNumber" placeholder="请输入手机号码" />
+                </div>
+                <div class="ui-block-c" style="padding: 3px 0px;">
+                    <input type="button" data-role="button" id="authCodeBtn" data-mini="true" data-inline="true" value="免费获取验证码" onclick="getAuthCode()" />
+                </div>
+            </div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a" align="right" style="padding: 15px 0px;">
+                    <span>验证码：</span>
+                </div>
+                <div class="ui-block-b">
+                    <input type="text" id="authCode" name="authCode" placeholder="请输入验证码" />
+                </div>
+            </div>
+            <div class="ui-grid-b">
+                <div class="ui-block-a" align="right" style="padding: 15px 0px;">
+                    <span>密码：</span>
+                </div>
+                <div class="ui-block-b">
+                    <input type="password" id="pwd" name="pwd" placeholder="请输入密码" />
+                </div>
+            </div>
+            <div class="ui-grid-b">
+                <span id="errMsg" style="color: red"></span>
+            </div>
+
+        </div>
+        <div align="center">
+            <a href="#" data-role="button" data-inline="true" onclick="register()">提交</a>
+            <a href="userLogin.html" data-role="button" data-inline="true" >取消</a>
+        </div>
+        
+    </div>
+</body>
+
+
+</html>

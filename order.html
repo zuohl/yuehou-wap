@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>爱自助</title>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<script src="js/common.js"></script>
+
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="./layer/need/layer.css" />
+<link rel="stylesheet" href="css/common.css" />
+</head>
+<body onload="">
+    <div data-role="page" id="pageone">
+    <script src="js/menu.js"></script>
+    <script src="layer/layer.js"></script>
+    <div data-role="header">
+        <a href="menu.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+        <h1>订单详情</h1>
+    </div>
+
+    <div data-role="content" id="content_div">
+        <div data-role="collapsible-set" id="collapsible_div">
+        <script type="text/javascript">
+            $(function() {
+                loadOrder();
+            });
+        </script>
+        </div>
+    
+        <div id="menu_div">
+            <input type="hidden" id="shopId" name="shopId" />
+            <span id="menuSpan">菜品信息</span>
+            <ul data-role="listview" data-inset="true" id="menu_list">
+            
+            </ul>
+        </div>
+        <div id="coupon_div">
+            <span id="specialOfferSpan">可使用优惠</span>
+            <ul data-role="listview" data-inset="true" id="specialOffer_list"></ul>
+            <span id="userCouponSpan">优惠券</span>
+            <ul data-role="listview" data-inset="true" id="coupon_list"></ul>
+        </div>
+        <div id="present_div">
+            <span id="presentSpan">买单赠送</span>
+            <ul data-role="listview" data-inset="true" id="present_list"></ul>
+        </div>
+        <div id="remark_div">
+            <span id="complateSpan">留言备注</span>
+            <input type="text" id="orderRemark" name="orderRemark" placeholder="留言备注"/>
+            <span>桌号</span><input type="text" id="tableNumber" name="tableNumber" placeholder="桌号"/>
+            <span>人数</span><input type="text" id="peopleNumber" name="peopleNumber" maxlength="11" placeholder="人数"/>
+            <div id="mobileNumberDiv">
+                <span>免登陆直接下单，登陆后可获得最新优惠</span><br />
+                <span>您的手机</span><input type="text" id="mobileNumber" name="mobileNumber" maxlength="11" placeholder="手机未注册将自动创建爱自助账号"/>
+            </div>
+        </div>
+        <div id="paytype_div">
+            <span id="complateSpan">选择支付方式</span>
+            <ul data-role="listview" data-inset="true" id="paytype_list">
+                <div class="ui-checkbox">
+                    <label for="checkbox-enhanced" class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-checkbox-off">零钱支付余额：<span id="balance">0</span>元</label>
+                    <input name="checkbox-enhanced" id="wallet" name="paytype" data-enhanced="true" type="checkbox" checked disabled="disabled"/>
+                </div>
+                <div class="ui-radio">
+                    <label for="radio-enhanced" class="ui-btn ui-corner-all ui-btn-inherit ui-btn-icon-left ui-radio-off">微信支付</label>
+                    <input name="radio-enhanced" id="weixin" name="paytype" data-enhanced="true" type="radio" checked/>
+                </div>
+            </ul>
+        </div>
+        <div>
+            <span id="errMsg" style="color: red"></span>
+        </div>
+    </div>
+    
+    <div data-role="controlgroup" data-type="horizontal" align="right">
+        <span>支付金额：</span><span id="payPrice" style="color: red;">0</span><span>元</span>
+        <span><input type="button" data-role="button" id="payBtn" data-mini="true" value="确认付款" onclick="placeOrder()" /></span>
+    </div>
+</div> 
+</body>
+
+
+</html>

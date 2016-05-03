@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户登录</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="jquery-mobile/jquery.validate.min.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <script>
+        $(function() {
+            $("#loginInfo").validate({
+                submitHandler: function(form) {
+                    setBtnStatus($('#submitBtn'));
+                    var password = $.trim($("#password").val());
+                    var account = $.trim($("#account").val());
+                    $("#errorMsg").html("");
+                    password = $.md5(password);
+                    $.ajax({
+                        type : "GET",
+                        url  : urls.login+"?random="+Math.random(),
+                        cache : false,
+                        async: true,
+                        dataType : "json",
+                        data : {account:account,
+                                password:password,
+                                loginSource:"WAP"
+                                },
+                        beforeSend: function () {
+                           showLoader("正在登陆");
+                         },
+                        complete:function(){
+                           hideLoader();
+                         },
+                        success : onSuccess,
+                        error : onError
+                    }); 
+                }
+            });
+        });
+
+        function onSuccess(data,status){
+            if (data.code == "SUCCESS") {
+                $('#submitBtn').button("disable");
+                var url = getParameter("previousPage");
+                saveToken(data.data.token);
+                setValue("userId",data.data.userId);
+                window.location = isNotEmpty(url)?url:"main.html";
+            }
+            else if (data.code == "BUSINESS_ERROR"){
+                $("#errorMsg").html(data.msg);
+                $('#submitBtn').button("enable");
+            }
+        }
+        
+        function onError(data,status){
+            $("#errorMsg").html("未知错误,请重试");
+            $('#submitBtn').button("enable");
+        }
+    </script>
+</head>
+
+<body>
+    <div data-role="page" data-dom-cache="true">
+        <div data-role="header">
+            <h1>用户登录</h1>
+        </div>
+        
+        <div data-role="content">
+            <form id="loginInfo" action="#">
+                <div data-role="fieldcontain">
+                    <label for="account">帐号：</label>
+                    <input type="text" name="account" id="account" data-clear-btn="true" class="required" placeholder="请输入账号">
+                    <label for="password">密码：</label>
+                    <input type="password" name="password" id="password" class="required" required="required" data-clear-btn="true" placeholder="请输入密码">
+                    <label for="errorMsg"></label>
+                    <span id="errorMsg" style="color: red"></span>
+                </div>
+                <input type="submit" id="submitBtn" value="提交">
+            </form>
+            <div data-role="controlgroup" data-type="horizontal" data-mini="true" align="right">
+                <a href="#download" data-role="button" data-inline="true" data-icon="grid" data-rel="popup" data-position-to="window" data-transition="pop">下载APP</a>
+                <a href="#" data-role="button" data-inline="true" data-icon="info" onclick="registerUser('忘记密码')">忘记密码</a>
+                <a href="#" data-role="button" data-inline="true" data-icon="star" onclick="registerUser('快速注册')">快速注册</a>
+            </div>
+        </div>
+        <div data-role="popup" id="download" data-theme="a" data-overlay-theme="b" class="ui-content" style="max-width:340px; padding-bottom:2em;">
+            <h3>下载爱自助APP</h3>
+            <p></p>
+            <a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.cunhou.aizizhu" data-role="button"  data-icon="check" data-inline="true" data-mini="true">下载</a>
+            <a href="#" data-role="button" data-rel="back" data-inline="true" data-mini="true">取消</a>
+        </div>
+    </div>
+</body>
+</html>

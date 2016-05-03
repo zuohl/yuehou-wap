@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+	<link rel="stylesheet" href="css/common.css" />
+
+</head>
+
+<body>
+
+	<div data-role="page" id="toConsumOrderPage" data-dom-cache="true">
+		<script src="js/myOrder.js"></script>
+		<script>
+			var consumSize = parseInt(getValue("consumSize"));//总页数
+			var content;
+			$(document).on('pageshow',"#toConsumOrderPage",function () {
+				var consumePageIndex = parseInt(getValue("consumePageIndex"));//当前页
+				//$(document).unbind("scroll");
+				$(document).bind("scroll", function(event){
+					if (consumePageIndex >= consumSize) {
+						$("#moreConsumOrder").html("没有更多订单了");
+					}
+					else if( $(document).scrollTop() >= $(document).height()-$(window).height() ){
+						content = getOrderList(	++consumePageIndex,0);
+						$("#toConsumOrderList").append(content).listview('refresh');
+						setValue("consumePageIndex",consumePageIndex);
+					}
+				});
+			});
+
+			$(document).on("pagehide","#toConsumOrderPage",function(){
+				$(document).unbind("scroll");
+			});
+
+			$("#toConsumOrderPage").on('pageinit', function () {
+				setValue("consumSize",1);
+				setValue("consumePageIndex",1);
+				content = getOrderList(1,0);
+				$("#toConsumOrderList").append(content).listview('refresh');
+				if (getValue("consumSize") == "0" || getValue("consumSize") == getValue("consumePageIndex")) {
+					$("#moreConsumOrder").html("没有更多订单了");
+				}
+/*				$("#toConsumOrderList").on("swiperight",function(){
+					$("#toConsumOrderList .main").click();
+				});
+				$("#toConsumOrderList").on("swipeleft",function(){
+					$("#toConsumOrderList .myInfo").click();
+				});*/
+			})
+
+			$(document).delegate("#toConsumOrderPage", "pageinit", function() {
+				$(document).bind("pagebeforechange", beforechange);
+			});
+
+		</script>
+		<div data-role="header" data-position="fixed" data-theme="a">
+			<a href="myInfo.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+			<h3>我的订单</h3>
+			<div data-role="navbar">
+				<ul>
+					<li><a href="toConsumOrder.html" data-transition="fade" class="ui-btn-active ui-state-persist">待消费</a></li>
+					<li><a href="refundOrder.html"  data-transition="fade">退款单</a></li>
+					<li><a href="myOrder.html" data-transition="fade" >全部</a></li>
+				</ul>
+			</div><!-- /navbar -->
+		</div><!-- /footer -->
+		  <div data-role="main" class="ui-content">
+		    <ul data-role="listview" data-inset="true" id="toConsumOrderList">
+		    </ul>
+		  </div>
+		 <div class="ui-content" id="more" align="center">
+            <p id="moreConsumOrder" align="center" >正在努力加载中...</p>
+        </div>
+<!--		<div data-role="footer" data-position="fixed" data-theme="a" data-tap-toggle="false">
+			<div data-role="navbar">
+				<ul>
+					<li><a href="main.html"  data-transition="slide" class="main ui-btn-icon-top" data-direction="reverse">主页</a></li>
+					<li><a href="myOrder.html"  data-transition="slide" class="myOrder_active ui-btn-icon-top">我的订单</a></li>
+					<li><a href="myInfo.html"  data-transition="slide" class="myInfo ui-btn-icon-top">我的</a></li>
+				</ul>
+			</div>&lt;!&ndash; /navbar &ndash;&gt;
+		</div>&lt;!&ndash; /footer &ndash;&gt;-->
+	 </div>
+
+
+
+
+</body>
+</html>

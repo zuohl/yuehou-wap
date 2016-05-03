@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助-修改密码</title>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+</head>
+
+<body>
+    <div data-role="page" id="userPwdPage"  data-dom-cache="true">
+        <div data-role="header" id="pageone" data-position="fixed" data-theme="a">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1 id="title">修改密码</h1>
+        </div>
+        <script>
+            function updatePassword() {
+                $('#errMsg').html();
+                var oldPassword = $('#oldPwd').val();
+                var newPassword = $('#newPwd').val();
+                var confirmNewPassword = $('#confirmNewPwd').val();
+                if (!isNotEmpty(oldPassword)) {
+                    $('#errMsg').html("当前密码不能为空！");
+                    return;
+                }
+                if (!isNotEmpty(newPassword)) {
+                    $('#errMsg').html("新密码不能为空！");
+                    return;
+                }
+                if (newPassword.length<6 || newPassword.length>20) {
+                    $('#errMsg').html("新密码长度不能小于6位！");
+                    return;
+                }
+                if (!isNotEmpty(confirmNewPassword)) {
+                    $('#errMsg').html("确认密码不能为空！");
+                    return;
+                }
+                if (confirmNewPassword.length<6 || confirmNewPassword.length>20) {
+                    $('#errMsg').html("确认密码长度不能小于6位！");
+                    return;
+                }
+                if (newPassword != confirmNewPassword) {
+                    $('#errMsg').html("两次输入的新密码不一致！");
+                    return;
+                }
+                oldPassword = $.md5(oldPassword);
+                newPassword = $.md5(newPassword);
+                confirmNewPassword = $.md5(confirmNewPassword);
+                $.ajax({
+                    type : "POST",
+                    url  : urls.userPwdUpdate,
+                    cache : false,
+                    async: true,
+                    dataType : "json",
+                    data : {
+                        t : getToken(),
+                        oldPassword : oldPassword,
+                        newPassword : newPassword
+                    },
+                    beforeSend: function () {
+                        showLoader("正在加载");
+                    },
+                    complete:function(){
+                        hideLoader();
+                    },
+                    success : function(data,status){
+                        if (data.code == "SUCCESS") {
+                            window.location = "userInfo.html";
+                        } else if (data.code == "BUSINESS_ERROR") {
+                            $('#errMsg').html(data.msg);
+                        } else if (data.code == "INVALID_SESSION") {
+                            returnToLogin();
+                        }
+                    }
+                });
+            }
+        </script>
+        <div data-role="content">
+            <ul data-role="listview" id="userPwdList" data-inset="true">
+                <li>当前密码<input type="password" id="oldPwd" maxlength="20" placeholder="6-20位字符" /></li>
+                <li>新密码<input type="password" id="newPwd" maxlength="20" placeholder="6-20位字符" /></li>
+                <li>确认密码<input type="password" id="confirmNewPwd" maxlength="20" placeholder="6-20位字符" /></li>
+                <span id="errMsg" style="color: red"></span>
+            </ul>
+            <input type="button" id="saveBtn" value="确定" onclick="updatePassword()" />
+        </div>
+    </div>
+</body>
+</html>

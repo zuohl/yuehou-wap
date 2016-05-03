@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>订单详情</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/myOrder.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    
+</head>
+
+<body>
+    <div data-role="page" id="orderDetailsPage" data-add-back-btn="true">
+        <div data-role="header" id="pageone" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1>订单详情</h1>
+        </div>
+
+        <div data-role="content"  data-theme="d">
+            <div class="detailsContent" id="detailsContent">
+
+            </div>
+        </div>
+     </div>
+
+</body>
+<script>
+	 $(document).delegate("#orderDetailsPage", "pageinit", function() {
+	    $(document).bind("pagebeforechange", beforechange);
+     });
+     $("#orderDetailsPage").on('pageinit', function () {
+         wxConfig();
+     });
+         $(document).on('pageshow','#orderDetailsPage', function () {
+        var content= getOrderDetails(getValue("orderId"));
+        $('.detailsContent').html(content);
+        $(".menu_list").listview();
+        $(".order_detail_list").listview();
+    });
+</script>
+</html>

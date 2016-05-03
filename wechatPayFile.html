@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>用户支付</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <style>
+    .payClass li {
+        text-align: center;
+    }
+    </style>
+    <script>
+        $(document).ready(function () {
+            var code = getParameter("code");
+            paymentOrder(getValue("orderId"),code);
+            $('#shopName').html(getValue("shopName"));
+            $('#payMoney').html(getValue("payMoney"));
+        });
+    </script>
+</head>
+<body>
+<div data-role="page">
+    <div data-role="content">
+        <ul data-role="listview" class="payClass">
+            <li><span id="shopName">店铺名</span></li>
+            <li><span id="payMoney">金额</span></li>
+            <li>收款方：<span id="aizizhu">爱自助</span></li>
+            <li data-icon="false"><a href="javascript:wechatPay();" data-inline="true" data-mini="true" >立即支付</a></li>
+        </ul>
+    </div>
+</div>
+</body>
+</html>

@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+
+</head>
+
+<body>
+
+    <div data-role="page" id="userInfoPage"  data-dom-cache="true">
+        <div data-role="header" id="pageone" data-position="fixed" data-theme="a">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1>用户信息</h1>
+        </div>
+
+        <script>
+            function getUserInfo(token) {
+                $.ajax({
+                    type : "POST",
+                    url  : urls.userInfo,
+                    cache : false,
+                    async: true,
+                    dataType : "json",
+                    data : {
+                        t:token
+                    },
+                    beforeSend: function () {
+                        showLoader("正在加载");
+                    },
+                    complete:function(){
+                        hideLoader();
+                    },
+                    success : function(data,status){
+                        if (data.code == "SUCCESS") {
+                            var userInfo = data.data;
+                            var lables = new Array();
+                            /*lables.push("<li>");
+                            lables.push("<a href='#'>");
+                            lables.push("头像");
+                            lables.push("</a>");
+                            lables.push("</li>");*/
+                            
+                            lables.push("<li id='"+userInfo.nickname+"' onclick='updateUserInfoInit(1,this)'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("昵称&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            lables.push(userInfo.nickname);
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li id='"+userInfo.realName+"' onclick='updateUserInfoInit(2,this)'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("姓名&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            lables.push(userInfo.realName);
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li id='"+userInfo.gender+"' onclick='updateGender(this)'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("性别&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            if (userInfo.gender == true) {
+                                lables.push("男");
+                            } else {
+                                lables.push("女");
+                            }
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li id='"+userInfo.birthday+"' onclick='updateUserInfoInit(3,this)'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("生日&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            lables.push(userInfo.birthday);
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("手机号码&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            lables.push(userInfo.mobileNumber);
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li id='"+userInfo.email+"' onclick='updateUserInfoInit(4,this)'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("邮箱&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("<h3 class='ui-li-aside'>");
+                            lables.push(userInfo.email);
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            
+                            lables.push("<li onclick='updatePwdInit()'>");
+                            lables.push("<a href='#'>");
+                            lables.push("<h3>");
+                            lables.push("修改密码&nbsp;");
+                            lables.push("</h3>");
+                            lables.push("</a>");
+                            lables.push("</li>");
+                            $("#userInfoList").append(lables.join("")).listview('refresh');
+                        }
+                        else if (data.code == "INVALID_SESSION") {
+                            returnToLogin();
+                        }
+                    }
+                });
+            }
+
+            $("#userInfoPage").on('pageinit', function () {
+                getUserInfo(getToken());
+            })
+            
+            function updateUserInfoInit(type, obj) {
+                localStorage.updateType = type;
+                var value = $(obj).attr("id");
+                if (value==null || value=="null") {
+                    value = "";
+                }
+                localStorage.updateValue = value;
+                window.location = "userInfoUpdate.html";
+            }
+            
+            function updatePwdInit() {
+                window.location = "userPwdUpdate.html";
+            }
+            
+            // 修改性别
+            function updateGender(obj) {
+                var gender = $(obj).attr("id");
+                // true表示男，需要修改成女（0）
+                if ("true" == gender) {
+                    gender = "0";
+                } else {
+                    gender = "1";
+                }
+                $.ajax({
+                    type : "POST",
+                    url  : urls.userInfoUpdate,
+                    cache : false,
+                    async: true,
+                    data : {
+                        t : getToken(),
+                        gender : gender
+                    },
+                    beforeSend: function () {
+                        showLoader("正在加载");
+                    },
+                    complete:function(){
+                        hideLoader();
+                    },
+                    success : function(data,status){
+                        if (data.code == "SUCCESS") {
+                            window.location = "userInfo.html";
+                        }
+                        else if (data.code == "INVALID_SESSION") {
+                            returnToLogin();
+                        }
+                    }
+                });
+            }
+        </script>
+        <div data-role="content">
+            <ul data-role="listview" id="userInfoList" data-inset="true">
+
+            </ul>
+            <input type="button" id="forgetPass" value="退出登录" onclick="logout()" />
+        </div>
+    </div>
+</body>
+</html>

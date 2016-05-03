@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>爱自助</title>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/common.css" />
+<script src="js/common.js"></script>
+</head>
+<body>
+    <div data-role="page" id="hotCityPage" data-dom-cache="true">
+<!--
+        <script src="//cdn.bootcss.com/angular.js/1.5.0/angular.min.js"></script>
+-->
+        <script src="jquery-mobile/angular.min.js"></script>
+        <script src="js/hotCity.js"></script>
+         <div data-role="header" data-position="fixed" data-theme="a">
+             <div data-role="navbar">
+                <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc4-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+               	城市选择
+             </div>
+         </div>
+        <!--  data-split-icon="star" data-split-theme="d" -->
+        <div data-role="content" data-ng-app="hotCityApp" data-ng-controller="hotCityCtrl">
+        <ul data-role="listview" data-inset="true" id="hotCityList" data-filter="true" data-filter-placeholder="搜索热门城市" >
+            <li data-ng-repeat = "cityName in hotCity">
+            	<a class="switchCity">
+            		       	    {{ cityName }}            	
+            	</a>
+            </li>
+        </ul>
+
+        
+        
+<!--         <script type="text/javascript">
+            $(document).on('pageshow','#hotCityPage', function () {
+
+            });
+            
+            $("#hotCityPage").on('pageinit', function () {
+
+            });
+        </script> -->
+        </div>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>申请退款</title>
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="js/common.js"></script>
+    <script src="js/myOrder.js"></script>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    
+</head>
+
+
+
+
+
+
+
+
+
+<body>
+    <div data-role="page" id="orderRefundPage">
+        <div data-role="header" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <a href="../toolbar/" data-rel="back" class="ui-btn ui-btn-left ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l">Back</a>
+            <h1>申请退款</h1>
+        </div>
+
+        <div data-role="content" data-theme="d">
+            <div class="refundContent">
+                <ul data-role="listview" data-inset="false" class="order_refund_list">
+                    <li class="menu_li">
+                        <span>订单编号：</span>
+                        <span id="userOrderId"></span>
+                    </li>
+                    <li class="menu_li">
+                        <h3>退款原因</h3>
+                    </li>
+                        <label>
+                            预约不上<input type="radio" name="refundReason" value="预约不上" />
+                        </label>
+                        <label>
+                            商家营业，但不接待<input type="radio" name="refundReason" value="商家营业，但不接待" />
+                        </label>
+                        <label>
+                            商家停业/装修/转让<input type="radio" name="refundReason" value="商家停业/装修/转让" />
+                        </label>
+                        <label>
+                            过去啦，不太满意<input type="radio" name="refundReason" value="过去啦，不太满意" />
+                        </label>
+                        <label>
+                            朋友评价不好<input type="radio" name="refundReason" value="朋友评价不好" />
+                        </label>
+                        <label>
+                            计划有变<input type="radio" name="refundReason" value="计划有变" />
+                        </label>
+                        <label>
+                            买错了<input type="radio" name="refundReason" value="买错了" />
+                        </label>
+                        <label>
+                            后悔了，不想要<input type="radio" name="refundReason" value="后悔了，不想要" />
+                        </label>
+                    </li>
+                    <li>
+                        <input type="button" id="saveBtn" value="申请退款" onclick="orderRefund()" />
+                    </li>
+                </ul>
+            </div>
+        </div>
+     </div>
+
+</body>
+<script>
+    $(document).on("pageshow","#orderRefundPage", function () {
+        $("#userOrderId").html(getValue("userOrderId"));
+    });
+    
+</script>
+</html>

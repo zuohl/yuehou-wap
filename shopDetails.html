@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <link rel="stylesheet" href="layer/need/layer.css" />
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+    <style>
+        .i_tips{height:30px;margin-left:20px;color:#f60;font-size:14px;line-height:30px}
+        .i_box{margin:10px 20px;font-size:14px;float:left}
+        .i_box *{vertical-align:middle}
+        .i_box a{padding:2px 5px;background-color:#e9e9e9;border:1px solid #ccc;text-decoration:none;color:#585858;line-height:20px}
+        .i_box a:hover{color:#000}
+        .i_box input{width:30px;height:18px;margin:0 8px;padding:2px;border:1px solid #ccc;text-align:center;line-height:16px}
+    </style>
+</head>
+
+<body>
+
+    <div data-role="page" id="shopDetailsPage" data-dom-cache="true">
+        <script src="js/shop.js"></script>
+        <script src="js/menu.js"></script>
+        <script src="js/gps.js"></script>
+        <script src="layer/layer.js"></script>
+        <div data-role="header" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <a href="main.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+            <h1>
+                <span class="shopName">爱自助</span>
+            </h1>
+            <a href="payBill.html" data-role="button" data-inline="true" data-mini="true">自助买单</a>
+            <div data-role="navbar">
+
+                 <ul>
+                     <li><a href="shopDetails.html" data-transition="fade" class="ui-btn-active ui-state-persist current-li">店铺详情</a></li>
+                     <li><a href="menu.html" data-transition="fade">点菜</a></li>
+                 </ul>
+             </div>
+         </div>
+
+        <div data-role="content">
+            <ul data-role="listview" id="shopDetailsList" data-inset="false">
+                <li>
+                    <div id="categorySubTags" class="categorySubTags" style="background: url('http://img.izizhu.com/shop/2015/10/16/629a3cce057c4cc7bda20223be03c008.png') no-repeat 0 0;">
+
+                       <div class="subTags"></div>
+                    </div>
+                </li>
+
+                <li>
+                    <span>营业时间:</span>
+                    <span id="businessHour"></span>
+                    <span >
+                       <a href="payBill.html" data-role="button" data-inline="true" data-mini="true">自助买单</a>                   
+                    </span>                  
+                </li>
+                <li>
+                    <a id="address">
+                    <img src="image/address.png" class="ui-li-icon" >
+                    <span id="addressName"></span>
+                </a>
+                    <a href="tel:15625298237" class="ui-btn-inline" data-icon="phone" id="mobilePhone">
+                    </a>
+                </li>
+                <li>
+                    <h3>门店服务</h3>
+                    <div id="shopService" style="width: 100%; white-space:normal;">
+                    </div>
+                </li>
+                <li>
+                    <h3>店家介绍</h3>
+                    <div id="description" style="width: 100%; white-space:normal;">
+                    </div>
+                </li>
+            </ul>
+
+        </div>
+        <script>
+            $("#shopDetailsPage").on('pageinit', function () {
+                wxConfig();
+                var shopId = getParameter("shopId");
+                if(!isNotEmpty(shopId)) {
+                    shopId = getValue("shopId");
+                }
+                var shopName = getParameter("shopName");
+                if(!isNotEmpty(shopName)) {
+                    shopName = getValue("shopName");
+                }
+                shopName = decodeURI(shopName);
+                setValue("shopId", shopId);
+                setValue("shopName", shopName);
+                $(".shopName").html(shopName);
+                getShopDetails(shopId);
+
+                // $("#myOrderList").append(content).listview('refresh');
+            })
+        </script>
+    </div>
+</body>
+</html>

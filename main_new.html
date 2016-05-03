@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html xmlns:v-bind="http://www.w3.org/1999/xhtml">
+<head>
+<title>爱自助</title><meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/common.css" />
+<script src="js/common.js"></script>
+<script src="js/vue.js"></script>
+</head>
+<body>
+    <div data-role="page" id="mainPage" data-dom-cache="true">
+        <script src="js/gps.js"></script>
+        <script src="js/menu.js"></script>
+        <div data-role="header" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <h1>爱自助</h1>
+            <div data-role="navbar" >
+
+                <ul class="headTitle">
+                    <li><a href="http://a.app.qq.com/o/simple.jsp?pkgname=com.cunhou.aizizhu">App下载</a></li>
+                    <li><a href="searchShop.html" class="ui-btn-icon-left ui-icon-search">搜索</a></li>
+                    <li><a href="myInfo.html">我的</a></li>
+                </ul>
+        </div>
+        <input type="hidden" id="totalCount" name="totalCount" />
+    
+        <div data-role="content">
+
+        <ul data-role="listview" data-inset="true" id="shopList">
+        <li data-icon="false" id="{{shop.shopId}}" name="{{shop.name}}" onclick="selectShop(this)" class="ui-li-has-thumb ui-first-child" v-for="shop in shops" onclick="selectShop(this)">
+            <a href="#" class="ui-btn"><img v-bind:src="shop.logo" alt="{{shop.shopId}}" style="padding:8px 0px">
+                <h3>{{shop.name}}</h3>
+                <p>{{shop.address}}</p>
+                <p>人均：{{shop.avgpriceShow}}元<span class="shopDistance"></span></p>
+            </a>
+        </li>
+        </ul>
+        
+        
+        <div class="ui-content" id="more" align="center">
+            <p id="moreP" align="center">正在努力加载中...</p>
+        </div>
+        <script type="text/javascript">
+            var shopListVue = new Vue({
+                    el: '#shopList',
+                    data: {
+                       shops: [],
+                       message: "hello"
+                    },
+                methods: {
+                loadShopList: function (mainPageIndex,keyWords) {
+                    $.ajax({
+                        type : "POST",
+                        url  : urls.shopList,
+                        cache : true,
+                        async: false,
+                        dataType:"json",
+                        data : {
+                            city : "深圳",
+                            keyWords:keyWords,
+                            pageIndex : mainPageIndex,
+                            currentLatitude : getValue("latitude"),
+                            currentLongitude : getValue("longitude")
+                        },      
+                        success : function(data) {
+                            if (data.code == "SUCCESS") {
+                                var c_shop = data.data;
+                                shopListVue.shops = c_shop;
+                                var pageSize = Math.ceil(data.totalCount/10);
+                                setValue("mainPageSize",pageSize);
+                                //$('#moreP').html("加载更多("+mainPageIndex+"/"+pageSize+")");
+                            } else if (data.code == "BUSINESS_ERROR") {
+                                alert(data.msg);
+                            }
+                        },
+                        error : function(data,code) {
+                            alert("网络连接好像出问题了");
+                        }
+                    }); 
+                }
+             }
+            });    
+            $(document).on('pageshow','#mainPage', function () {
+                $(document).bind("scroll", function(event){
+                    var mainPageIndex = parseInt(getValue("mainPageIndex"));//当前页
+                    var mainPageSize = parseInt(getValue("mainPageSize"));//总页数
+                    if (mainPageIndex >= mainPageSize) {
+                        $("#moreP").html("没有更多了");
+                    } else if($(document).scrollTop() >= $(document).height()-$(window).height()) {
+                        //var content = loadMainPage(++mainPageIndex);
+                        //$('#listUl').append(content).listview('refresh');
+                        shopListVue.loadShopList(++mainPageIndex)
+                        //$("#shopList").listview('refresh');
+                        setValue("mainPageIndex", mainPageIndex);
+                    }
+                });
+            });
+
+            $(document).on("pagehide","#mainPage",function(){
+                $(document).unbind("scroll");
+            });
+            
+            $("#mainPage").on('pageinit', function () {
+                var content = "";
+                setValue("mainPageIndex", 1);
+                setValue("mainPageSize", 1);
+                shopListVue.loadShopList(1,"")
+                //content = loadMainPage(1,"");
+                //$('#listUl').html(content).listview('refresh');
+                if (getValue("mainPageSize") == getValue("mainPageIndex")) {
+                    $("#moreP").html("没有更多了");
+                }
+            });
+
+        </script>
+        </div>
+<!--        <div data-role="footer" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <div data-role="navbar">
+                <ul class="main_footer">
+                    <li><a href="#" class="main_active ui-btn-icon-top" >主页</a></li>
+                    <li><a href="myOrder.html" data-transition="slide" class="myOrder ui-btn-icon-top">我的订单</a></li>
+                    <li><a href="myInfo.html" data-transition="slide" class="myInfo ui-btn-icon-top" >我的</a></li>
+                </ul>
+            </div>
+        </div>-->
+    </div>
+</body>
+
+</html>

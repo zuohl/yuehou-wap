@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>爱自助</title>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<script src="js/common.js"></script>
+<link rel="stylesheet" href="css/common.css" />
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="./layer/need/layer.css" />
+<style>
+.i_tips{height:30px;margin-left:20px;color:#f60;font-size:14px;line-height:30px}
+.i_box{margin:1px 0px;font-size:14px;float:left;height: 26px;}
+.i_box *{vertical-align:middle}
+.i_box a{padding:0px;background-color:#fff;border:1px solid #ccc;color:#fe7a00;line-height:25px;border-radius: 50%;border-radius: 100%;  width: 25px;  display: inline-block;  height: 25px;  text-align: center;}
+.i_box a:hover{color:#fe7a00}
+.layermchild .layermcont #taste_detail_div div{
+    margin-left: 10%;
+    height: 30px;
+    line-height: 30px;
+}
+.layermchild .layermcont #taste_detail_div div span{
+    margin-right: 10px;
+}
+.layermchild .layermcont #taste_detail_div  .newPrice{
+    color: #fe7a00;
+    margin-left: 280px;
+    line-height: 40px;
+}
+
+</style>
+</head>
+<body>
+        <div data-role="page" id="menuPage" data-dom-cache="true">
+        <script src="js/menu.js"></script>
+        <script src="layer/layer.js"></script>
+        <div data-role="header" data-position="fixed" data-theme="a" data-tap-toggle="false">
+            <a href="main.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+            <h1><span class="shopName">爱自助</span></h1>
+            <a href="payBill.html" data-role="button" data-inline="true" data-mini="true">自助买单</a>
+            <div data-role="navbar">
+                <ul>
+                    <li><a href="shopDetails.html"  data-transition="fade">店铺详情</a></li>
+                    <li><a href="menu.html" data-transition="fade" class="ui-btn-active ui-state-persist current-li">点菜</a></li>
+                </ul>9+9++
+
+             </div>
+             
+         </div>
+         
+        <div data-role="content" id="content_div">
+<!--             <div data-role="collapsible-set" id="collapsible_div">
+				
+            </div> -->
+            <div data-role="tabs">
+			    <ul data-role="listview"  class="tablist-left" id="tablist-left" >
+
+			    </ul>
+<!-- 			     data-filter="true" data-filter-placeholder="请搜索菜品"
+ -->			    <ul  class="ui-body-d tablist-content" data-role="listview"  id="tablist-content" data-divider-theme="a" data-filter="true" data-filter-placeholder="请搜索菜品">
+
+			    </ul>
+			</div>
+			
+             <script type="text/javascript">
+                    $("#menuPage").on('pageinit', function () {
+                        var shopId = getParameter("shopId");
+                        if(!isNotEmpty(shopId)) {
+                            shopId = getValue("shopId");
+                        }
+                        var shopName = getParameter("shopName");
+                        if(!isNotEmpty(shopName)) {
+                            shopName = getValue("shopName");
+                        }
+                        shopName = decodeURI(shopName);
+                        setValue("shopId", shopId);
+                        setValue("shopName", shopName);
+                        $(".shopName").html(shopName);
+                        loadOrderMenuPage(shopId);
+                    });
+                    function clickLeftMenu(obj) {
+                        var id = $(obj).attr("name");
+                        $("li[id="+id+"]").each(function(i){
+                            $('html,body').animate({scrollTop:$(this).offset().top}, 300);
+                        });
+                    }
+             </script>
+        </div>
+
+        <div id="taste_div">
+            <a><span id="quxiao" onclick="selectTaste()" style="cursor:pointer;width: 20%;color: #fe7a00;">取消</span></a>
+            <span id="kouweixuanze" onclick="selectTaste()" style="cursor:pointer;width: 60%;text-align: center;display: inline-block;font-size: 1.5em">口味选择</span>
+            <a><span id="complateSpan" onclick="selectTaste()" style="cursor:pointer;width: 17%;color: #fe7a00;">完成</span></a>
+            <div id="taste_detail_div">
+            </div>
+        </div>
+        <div data-role="footer" data-position="fixed" data-tap-toggle="false" data-theme="a" class="menuFooter">
+            <div data-role="navbar">
+                <ul>
+                    <li> 
+                   	 	<img src="./image/gouwuche.jpg" alt="Great Britain" height="25px" width="25px" style="float: left;">                   	 	
+					</li>
+                    <li > 
+                        <span id="totalPrice" style="height: 100%">0</span>元                    
+                    </li>
+                    <li>
+                    	<a onclick="selectOK()" id="selectOK1" class="ui-btn-active">选好了</a>
+                    </li>
+                </ul>
+                <input type="hidden" id="selectShopProducts" name="selectShopProducts" />
+                <input type="hidden" id="selectShopProductLableIds" name="selectShopProductLableIds" />
+            </div>
+        </div>
+    </div>
+</body>
+</html>

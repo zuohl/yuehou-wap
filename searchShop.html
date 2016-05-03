@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1" charset="UTF-8">
+<title>爱自助</title>
+<script src="./jquery-mobile/jquery.min.js"></script>
+<script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+<link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+<link rel="stylesheet" href="css/common.css" />
+<script src="js/common.js"></script>
+</head>
+<body>
+    <div data-role="page" id="searchShopPage" data-dom-cache="true">
+          <script src="js/menu.js"></script>
+         <div data-role="header" data-position="fixed" data-theme="a">
+             <div data-role="navbar">
+                 <div class="ui-grid-b">
+                    <div class="ui-block-a" style="padding: 8px 0px; width:20%">
+                        <a href="main.html" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+                    </div>
+                    <div class="ui-block-b" style="padding: 5px 0px; width:60%">
+                        <input placeholder="请输入店铺名称" type="search" id="searchKeyWords" data-clear-btn="true" />
+                    </div>
+                    <div class="ui-block-c" style="padding: 8px 0px; width:15%">
+                        <input value="搜索" type="submit" onclick="searchShop()">
+                    </div>
+                </div>
+             </div>
+         </div>
+        <div data-role="content">
+            <ul data-role="listview" data-inset="true" id="searchShopList">
+
+            </ul>
+
+        </div>
+        <script>
+            function searchShop(keyWords) {
+                var keyWords = $("#searchKeyWords").val();
+                setValue("mainPageIndex", 1);
+                setValue("mainPageSize", 1);
+                var content = loadMainPage(1,keyWords);
+                $('#searchShopList').html(content).listview('refresh');
+            }
+        </script>
+    </div>
+</body>
+
+</html>

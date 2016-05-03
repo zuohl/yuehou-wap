@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>爱自助</title>
+    <link rel="stylesheet" href="jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+    <link rel="stylesheet" href="css/common.css" />
+    <script src="jquery-mobile/jquery.min.js"></script>
+    <script src="jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <script src="jquery-mobile/jquery.md5.min.js"></script>
+    <script src="js/common.js"></script>
+</head>
+
+<body>
+    <div data-role="page" id="pageone" data-dom-cache="true">
+        <div data-role="header" data-position="fixed" data-theme="a">
+            <a href="main.html" data-ajax="false" class="ui-btn ui-alt-icon ui-nodisc-icon ui-corner-all ui-btn-icon-notext ui-icon-carat-l back_to_shop">back</a>
+            <h1 align="center" id="title"></h1>
+        </div>
+        
+        <script src="js/myOrder.js"></script>
+        <script>
+            $("#pageone").on('pageinit', function () {
+                $("#title").html(getValue("shopName"));
+            });
+
+            function viewOrder() {
+                var orderId = getValue("orderId");
+                window.location = "orderDetails.html?orderId="+orderId;
+            }
+        </script>
+        <div data-role="content">
+            <ul data-role="listview" id="userPwdList" data-inset="true">
+                <li style="text-align: center">支付成功!</li>
+                <span id="errMsg"></span>
+            </ul>
+            <input type="button" id="viewBtn" value="查看订单" onclick="viewOrder()" />
+        </div>
+    </div>
+</body>
+</html>

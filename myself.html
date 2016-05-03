@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+    <script src="./jquery-mobile/jquery.min.js"></script>
+    <script src="./jquery-mobile/jquery.mobile-1.4.5.min.js"></script>
+    <link rel="stylesheet" href="./jquery-mobile/css/jquery.mobile-1.4.5.min.css" />
+</head>
+<body>
+    <div data-role="page" id="pageone">
+        <div data-role="main" class="ui-content">
+            <!-- <h2>列表图标:</h2> -->
+            <ul data-role="listview" data-inset="true">
+                <li>我的订单</li>
+                <li>我的资料</li>
+            </ul>
+        </div>
+    </div> 
+</body>
+
+<script>
+    /*$(function() {
+        $.ajax({
+            type : "POST",
+            url  : "http://127.0.0.1:8080/app-api/api/shop/list",
+            cache : false,
+            data : {city : "深圳"},
+            success : onSuccess,
+            error : onError
+        });
+        return false;
+    });
+
+    function onSuccess(data,status){
+        if (data.code == "SUCCESS") {
+            var temp = data.data;
+            var lables = new Array();
+            for (var i = 0; i < temp.length; i++) {
+                lables.push("<div class='shop_class1' id='"+temp[i].shopId+"'>");
+                lables.push("<span>");
+                lables.push("<img src='"+temp[i].logo+"' alt='"+temp[i].name+"' width='60px' height='60px' />");
+                lables.push("</span>");
+                lables.push("<span>");
+                lables.push(temp[i].name);
+                lables.push("</span>");
+                lables.push("<span>");
+                lables.push(temp[i].address);
+                lables.push("</span>");
+                lables.push("<span>");
+                lables.push("人均："+temp[i].avgpriceShow+"元");
+                lables.push("</span>");
+                lables.push("</div>");
+            }
+            $('.shop_class').empty();
+            $('.shop_class').append(lables.join(" "));
+        }
+    }
+
+    function onError(data,status){
+        //进行错误处理
+        alert(1);
+    }*/
+</script>
+</html>
